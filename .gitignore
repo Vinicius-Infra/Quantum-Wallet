@@ -1,0 +1,7 @@
+.gradle/
+build/
+.openapi-generator/
+.idea/
+*.iml
+.vscode/
+bin/
