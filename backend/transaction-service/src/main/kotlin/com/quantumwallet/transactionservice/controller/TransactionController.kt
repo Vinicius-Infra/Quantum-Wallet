@@ -20,7 +20,7 @@ class TransactionController(
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction)
     }
 
-    // O ENDPOINT QUE VAI SALVAR O SEU TESTE NO NAVEGADOR:
+    
     @GetMapping
     fun getAllTransactions(): ResponseEntity<List<Transaction>> {
         val transactions = transactionRepository.findAll()
