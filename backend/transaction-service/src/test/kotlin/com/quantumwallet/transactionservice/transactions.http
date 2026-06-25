@@ -8,3 +8,14 @@ Content-Type: application/json
   "amount": 150.50,
   "type": "TRANSFER"
 }
+
+### 🆕 TESTE DE VALIDAÇÃO: Tentar enviar valor negativo (Deve falhar!)
+POST http://localhost:8081/api/v1/transactions
+Content-Type: application/json
+
+{
+  "sourceWalletId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+  "destinationWalletId": "9f8e7d6c-5b4a-3f2e-1d0c-9b8a7f6e5d4c",
+  "amount": -50.00,
+  "type": "TRANSFER"
+}
