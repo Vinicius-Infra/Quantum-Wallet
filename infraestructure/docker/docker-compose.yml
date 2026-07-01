@@ -1,18 +1,41 @@
 version: '3.8'
 
 services:
-  quantum-db:
+  # Container do Banco de Dados (que você já tinha)
+  mysql-db:
     image: mysql:8.0
-    container_name: quantum-wallet-db
+    container_name: quantum-wallet-mysql
     environment:
-      MYSQL_DATABASE: quantum_wallet_db
-      MYSQL_USER: quantum_user
-      MYSQL_PASSWORD: quantum_password
-      MYSQL_ROOT_PASSWORD: quantum_root_password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quantum_wallet
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - wallet-network
+
+  # Microsserviço Kotlin
+  transaction-service:
+    build:
+      context: ../../backend/transaction-service  # 🆕 Voltar duas pastas para achar a raiz correta
+      dockerfile: Dockerfile
+    container_name: transaction-service-app
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/quantum_wallet?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - mysql-db
+    networks:
+      - wallet-network
 
 volumes:
   mysql_data:
+
+networks:
+  wallet-network:
+    driver: bridge
