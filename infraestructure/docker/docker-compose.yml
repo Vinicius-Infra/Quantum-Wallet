@@ -18,16 +18,17 @@ services:
   # Microsserviço Kotlin
   transaction-service:
     build:
-      context: ../../backend/transaction-service  # 🆕 Voltar duas pastas para achar a raiz correta
+      context: ../../backend/transaction-service
       dockerfile: Dockerfile
     container_name: transaction-service-app
     ports:
       - "8081:8081"
+    # 🆕 Ajuste de sintaxe aqui (remover os hifens e usar dois-pontos):
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/quantum_wallet?createDatabaseIfNotExist=true&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-db:3306/quantum_wallet?createDatabaseIfNotExist=true&serverTimezone=UTC"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
     depends_on:
       - mysql-db
     networks:
