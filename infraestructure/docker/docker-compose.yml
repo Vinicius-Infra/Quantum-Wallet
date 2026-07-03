@@ -1,13 +1,12 @@
-version: '3.8'
-
 services:
-  # Container do Banco de Dados (que você já tinha)
   mysql-db:
     image: mysql:8.0
     container_name: quantum-wallet-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: quantum_wallet
+      MYSQL_DATABASE: quantum_wallet_db # 🆕 Equalizado com o sufixo _db
+      MYSQL_USER: quantum_user
+      MYSQL_PASSWORD: quantum_password
     ports:
       - "3306:3306"
     volumes:
@@ -15,7 +14,6 @@ services:
     networks:
       - wallet-network
 
-  # Microsserviço Kotlin
   transaction-service:
     build:
       context: ../../backend/transaction-service
@@ -23,11 +21,10 @@ services:
     container_name: transaction-service-app
     ports:
       - "8081:8081"
-    # 🆕 Ajuste de sintaxe aqui (remover os hifens e usar dois-pontos):
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-db:3306/quantum_wallet?createDatabaseIfNotExist=true&serverTimezone=UTC"
-      SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: "root"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-db:3306/quantum_wallet_db?createDatabaseIfNotExist=true&serverTimezone=UTC" # 🆕 Equalizado aqui também
+      SPRING_DATASOURCE_USERNAME: "quantum_user"
+      SPRING_DATASOURCE_PASSWORD: "quantum_password"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
     depends_on:
       - mysql-db
