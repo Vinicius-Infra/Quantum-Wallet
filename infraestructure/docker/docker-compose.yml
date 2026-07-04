@@ -4,7 +4,7 @@ services:
     container_name: quantum-wallet-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: quantum_wallet_db # 🆕 Equalizado com o sufixo _db
+      MYSQL_DATABASE: quantum_wallet_db 
       MYSQL_USER: quantum_user
       MYSQL_PASSWORD: quantum_password
     ports:
