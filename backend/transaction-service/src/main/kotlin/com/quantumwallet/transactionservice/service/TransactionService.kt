@@ -17,19 +17,42 @@ class TransactionService(
         if (transaction.amount <= BigDecimal.ZERO) {
             throw IllegalArgumentException("Transaction amount must be greater than zero.")
         }
+
+        // Validate balance for TRANSFER or WITHDRAW operations
+        if (transaction.type.name == "TRANSFER" || transaction.type.name == "WITHDRAW") {
+            val sourceId = transaction.sourceWalletId 
+                ?: throw IllegalArgumentException("Source wallet ID is required for this transaction type.")
+            
+            val currentBalance = calculateBalance(sourceId)
+            
+            if (currentBalance < transaction.amount) {
+                throw IllegalStateException("Insufficient balance to complete this transaction.")
+            }
+        }
+
         return transactionRepository.save(transaction)
     }
 
-    // Certifique-se de que este método está exatamente assim para a Controller achar!
     @Transactional(readOnly = true)
     fun getTransactionsByWallet(walletId: String): List<Transaction> {
         val uuid = UUID.fromString(walletId)
         return transactionRepository.findBySourceWalletIdOrDestinationWalletId(uuid, uuid)
     }
 
-    // Caso sua Controller precise listar tudo se o id for nulo, mantemos esse de apoio
     @Transactional(readOnly = true)
     fun getAllTransactions(): List<Transaction> {
         return transactionRepository.findAll()
+    }
+
+    private fun calculateBalance(walletId: UUID): BigDecimal {
+        val transactions = transactionRepository.findBySourceWalletIdOrDestinationWalletId(walletId, walletId)
+        
+        return transactions.fold(BigDecimal.ZERO) { balance, tx ->
+            when {
+                tx.destinationWalletId == walletId -> balance.add(tx.amount)
+                tx.sourceWalletId == walletId -> balance.subtract(tx.amount)
+                else -> balance
+            }
+        }
     }
 }
