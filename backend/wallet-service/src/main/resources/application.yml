@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: wallet-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/quantum_wallet_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: quantum_user
+    password: quantum_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8082
