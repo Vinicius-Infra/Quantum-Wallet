@@ -8,16 +8,15 @@ import java.util.UUID
 @Component
 class WalletClient(private val walletWebClient: WebClient) {
 
-    fun getWalletByUserId(userId: UUID): WalletResponseDTO? {
+    // Alterado para buscar pelo ID da própria carteira
+    fun getWalletById(walletId: UUID): WalletResponseDTO? {
         return try {
             walletWebClient.get()
-                .uri("/api/wallets/user/$userId")
+                .uri("/api/wallets/$walletId") // 🆕 Nova rota direta da carteira
                 .retrieve()
-                // Faz a chamada síncrona (.block()) porque a validação de saldo bloqueia a transação
                 .bodyToMono(WalletResponseDTO::class.java)
                 .block()
         } catch (e: Exception) {
-            // Em produção trataríamos erros específicos, aqui vamos logar e retornar null para segurança
             println("Error communicating with wallet-service: ${e.message}")
             null
         }
