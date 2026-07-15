@@ -23,4 +23,10 @@ class WalletService(private val walletRepository: WalletRepository) {
         return walletRepository.findByUserId(userId)
             .orElseThrow { NoSuchElementException("Wallet not found for user: $userId") }
     }
+
+    fun getWalletById(id: UUID): Wallet {
+    return walletRepository.findById(id)
+        .orElseThrow { NoSuchElementException("Wallet not found with ID: $id") }
+        
+    }
 }
