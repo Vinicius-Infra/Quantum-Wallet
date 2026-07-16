@@ -14,16 +14,16 @@ class TransactionService(
 
     @Transactional
     fun createTransaction(transaction: Transaction): Transaction {
-        // 1. Busca a carteira de origem usando o sourceWalletId da transação
+        
         val wallet = walletClient.getWalletById(transaction.sourceWalletId)
             ?: throw IllegalStateException("Source wallet not found or wallet-service is offline.")
 
-        // 2. Valida se a carteira de origem tem saldo suficiente
+        
         if (wallet.balance < transaction.amount) {
             throw IllegalArgumentException("Insufficient funds. Available balance: ${wallet.balance}")
         }
 
-        // 3. Salva a transação se tudo estiver correto
+        
         return transactionRepository.save(transaction)
     }
 }

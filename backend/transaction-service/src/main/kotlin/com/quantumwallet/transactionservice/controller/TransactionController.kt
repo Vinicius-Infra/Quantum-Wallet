@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/api/transactions")
 class TransactionController(
     private val transactionService: TransactionService,
     private val transactionRepository: TransactionRepository // Injetando o repository direto para listar tudo rápido hoje

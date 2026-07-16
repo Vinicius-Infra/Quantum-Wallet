@@ -8,11 +8,10 @@ import java.util.UUID
 @Component
 class WalletClient(private val walletWebClient: WebClient) {
 
-    // Alterado para buscar pelo ID da própria carteira
     fun getWalletById(walletId: UUID): WalletResponseDTO? {
         return try {
             walletWebClient.get()
-                .uri("/api/wallets/$walletId") // 🆕 Nova rota direta da carteira
+                .uri("/api/wallets/$walletId")
                 .retrieve()
                 .bodyToMono(WalletResponseDTO::class.java)
                 .block()
