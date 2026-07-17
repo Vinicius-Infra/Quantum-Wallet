@@ -20,4 +20,11 @@ class Wallet(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val type: WalletType
-)
+) {
+    protected constructor() : this(
+        id = null,
+        userId = UUID.randomUUID(),
+        balance = BigDecimal.ZERO,
+        type = WalletType.PERSONAL
+    )
+}
