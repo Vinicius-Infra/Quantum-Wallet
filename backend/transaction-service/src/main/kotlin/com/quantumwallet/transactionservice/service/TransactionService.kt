@@ -1,5 +1,6 @@
 package com.quantumwallet.transactionservice.service
 
+import com.quantumwallet.transactionservice.client.WalletClient
 import com.quantumwallet.transactionservice.model.Transaction
 import com.quantumwallet.transactionservice.repository.TransactionRepository
 import org.springframework.stereotype.Service
@@ -9,25 +10,24 @@ import java.util.UUID
 
 @Service
 class TransactionService(
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val walletClient: WalletClient
 ) {
 
     @Transactional
     fun createTransaction(transaction: Transaction): Transaction {
+        // Validação adicional de segurança para o valor
         if (transaction.amount <= BigDecimal.ZERO) {
             throw IllegalArgumentException("Transaction amount must be greater than zero.")
         }
 
-        // Validate balance for TRANSFER or WITHDRAW operations
-        if (transaction.type.name == "TRANSFER" || transaction.type.name == "WITHDRAW") {
-            val sourceId = transaction.sourceWalletId 
-                ?: throw IllegalArgumentException("Source wallet ID is required for this transaction type.")
-            
-            val currentBalance = calculateBalance(sourceId)
-            
-            if (currentBalance < transaction.amount) {
-                throw IllegalStateException("Insufficient balance to complete this transaction.")
-            }
+        // Busca os dados da carteira origem no wallet-service via WebClient
+        val wallet = walletClient.getWalletById(transaction.sourceWalletId)
+            ?: throw IllegalStateException("Source wallet not found or wallet-service is offline.")
+
+        // Valida se há saldo suficiente para a transação
+        if (wallet.balance < transaction.amount) {
+            throw IllegalArgumentException("Insufficient funds. Available balance: ${wallet.balance}")
         }
 
         return transactionRepository.save(transaction)
@@ -42,17 +42,5 @@ class TransactionService(
     @Transactional(readOnly = true)
     fun getAllTransactions(): List<Transaction> {
         return transactionRepository.findAll()
-    }
-
-    private fun calculateBalance(walletId: UUID): BigDecimal {
-        val transactions = transactionRepository.findBySourceWalletIdOrDestinationWalletId(walletId, walletId)
-        
-        return transactions.fold(BigDecimal.ZERO) { balance, tx ->
-            when {
-                tx.destinationWalletId == walletId -> balance.add(tx.amount)
-                tx.sourceWalletId == walletId -> balance.subtract(tx.amount)
-                else -> balance
-            }
-        }
     }
 }

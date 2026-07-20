@@ -30,4 +30,14 @@ class WalletController(private val walletService: WalletService) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to e.message))
         }
     }
+
+    @GetMapping("/{id}")
+    fun getWalletById(@PathVariable id: UUID): ResponseEntity<Any> {
+        return try {
+            val wallet = walletService.getWalletById(id)
+            ResponseEntity.ok(wallet)
+        } catch (e: NoSuchElementException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to e.message))
+        }
+    }
 }
